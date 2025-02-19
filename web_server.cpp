@@ -138,6 +138,7 @@ void initWebServer() {
       char html[5000];  // Ajustez la taille selon vos besoins
       snprintf(html, sizeof(html),
                "<!DOCTYPE html><html><head>"
+               "<meta http-equiv='refresh' content='120'>"  // Rafraîchissement toutes les 5 seconde
                "<meta charset='UTF-8'>"
                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
                "<title>Contrôle de la pompe</title>"
@@ -262,45 +263,69 @@ void initWebServer() {
   });
 
   //affichage tableau de focntionnement en j minute avant l'envoie vers le client
-  server.on("/tableau-fonctionnement", HTTP_GET, [](AsyncWebServerRequest* request) {
-    String data = "Indice | Temps écoulé\n";
+ server.on("/tableau-fonctionnement", HTTP_GET, [](AsyncWebServerRequest* request) {
+    // Récupérer l'indice récent
+    int indiceRecent = prefsPompe.getInt("indice_tableau", 0);
+
+    // Calculer l'indice de la dernière entrée
+    int dernierEntree = (indiceRecent > 0) ? (indiceRecent - 1) : (MAX_ENTRIES - 1);
+
+    // Récupérer la dernière entrée
+    char dernierKey[15];
+    snprintf(dernierKey, sizeof(dernierKey), "temps_%d", dernierDemarrage);
+    unsigned long derniereValeur = prefsPompe.getULong(dernierKey, 0);
+
+    // Conversion en jours, heures et minutes pour la dernière entrée
+    unsigned long jours_dernier = derniereValeur / JOUR;
+    unsigned long heures_dernier = (derniereValeur % JOUR) / HEURE;
+    unsigned long minutes_dernier = ((derniereValeur % JOUR) % HEURE) / MINUTE;
+
+    String derniereValeurFormattee = String(jours_dernier) + " j " + String(heures_dernier) + " h " + String(minutes_dernier) + " min";
+
+    // Créer la chaîne de réponse
+    String data = "Indice récent : " + String(indiceRecent) + "\n";
+    data += "Dernière entrée (indice " + String(dernierEntree) + ") : " + derniereValeurFormattee + "\n\n";
+    data += "Indice | Temps écoulé\n";
+
     for (int i = 0; i < MAX_ENTRIES; i++) {
-      char key[15];
-      snprintf(key, sizeof(key), "temps_%d", i);
-      unsigned long temps_tab = prefsPompe.getULong(key, 0);  // Récupère le temps en secondes
+        char key[15];
+        snprintf(key, sizeof(key), "temps_%d", i);
+        unsigned long temps_tab = prefsPompe.getULong(key, 0);
 
-      // Conversion en jours, heures et minutes
-      unsigned long jours_tab = temps_tab / JOUR;                         // 1 jour = 86400 secondes
-      unsigned long heures_tab = (temps_tab % JOUR) / HEURE;              // 1 heure = 3600 secondes
-      unsigned long minutes_tab = ((temps_tab % JOUR) % HEURE) / MINUTE;  // 1 minute = 60 secondes
+        // Conversion en jours, heures et minutes
+        unsigned long jours_tab = temps_tab / JOUR;
+        unsigned long heures_tab = (temps_tab % JOUR) / HEURE;
+        unsigned long minutes_tab = ((temps_tab % JOUR) % HEURE) / MINUTE;
 
-      // Formatage du temps
-      String tempsFormatte = String(jours_tab) + " j " + String(heures_tab) + " h " + String(minutes_tab) + " min";
-      data += String(i) + " | " + tempsFormatte + "\n";
+        String tempsFormatte = String(jours_tab) + " j " + String(heures_tab) + " h " + String(minutes_tab) + " min";
+        data += String(i) + " | " + tempsFormatte + "\n";
     }
+
+    // Envoyer la réponse au client
     request->send(200, "text/plain", data);
-  });
+});
 
-  //initaliser le tableau a 0
+  //reinitialiser la memoire du tableau
   server.on("/reset-tableau", HTTP_GET, [](AsyncWebServerRequest* request) {
-    for (int i = 0; i < MAX_ENTRIES; i++) {
-      char key[15];
-      snprintf(key, sizeof(key), "temps_%d", i);
-      prefsPompe.remove(key);  // Supprime chaque entrée du tableau
-    }
-    prefsPompe.putInt("indice_tableau", 0);  // Réinitialise l'index circulaire
+    // Effacer toutes les préférences liées au tableau
+    prefsPompe.begin("pompe", false);  // Ouvrir le namespace "pompe"
+    prefsPompe.clear();                // Effacer toutes les clés dans ce namespace
+    prefsPompe.end();                  // Fermer le namespace
+
+    // Réinitialiser manuellement l'indice du tableau
+    prefsPompe.putInt("indice_tableau", 0);
+
     request->send(200, "text/plain", "Tableau réinitialisé avec succès !");
   });
 
-
-
-  // Route pour réinitialiser relaisDeclenche
+  /*
+  // Route pour réinitialiser relais securité declenche
   server.on("/reset-relais", HTTP_GET, [](AsyncWebServerRequest* request) {
     relaisDeclenche = false;  // Réinitialiser relaisDeclenche
     request->send(200, "text/plain", "Relais réinitialisé avec succès !");
   });
-
-  // Route pour réinitialiser relaisDeclenche
+*/
+  // Route pour réinitialiser capteur bloque
   server.on("/reset-capteur", HTTP_GET, [](AsyncWebServerRequest* request) {
     capteurBloque = false;  // Réinitialiser capteurBloque
     // Créer une réponse HTML avec une balise <h1>
@@ -309,7 +334,7 @@ void initWebServer() {
     request->send(200, "text/html;charset=UTF-8", responseHtml);
   });
 
-    server.on("/reset-relais", HTTP_GET, [](AsyncWebServerRequest* request) {
+  server.on("/reset-relais", HTTP_GET, [](AsyncWebServerRequest* request) {
     securiteDeclenche = 0;  // Réinitialiser capteurBloque
     // Créer une réponse HTML avec une balise <h1>
     const char* responseHtml =
