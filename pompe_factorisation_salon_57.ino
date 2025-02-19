@@ -222,25 +222,7 @@ void loop() {
         dernierEnregistrement = millis();
     }
   
-  //calcul du temps reel de fcontionnement pas encore utiliser
-
-  if (tempsDebut != 0) {
-    if (capteurs.etatContacteur == HIGH && !contacteurDeclenche) {
-      tempsDebutReel = millis();
-      contacteurDeclenche = true;
-    } else if (capteurs.etatContacteur == LOW && contacteurDeclenche) {
-      tempsFinReel = millis();
-      //  tempsReel = tempsFinReel - tempsDebutReel;
-
-      tempsReel = (tempsFinReel - tempsDebutReel) / 1000;  // Conversion en secondes
-
-      Serial.print("Temps de fonctionnement réel : ");
-      Serial.print(tempsReel);
-      Serial.println(" secondes  ");
-      miseAJourEffectuee = true;  //valide la mise a jour du tableau
-      contacteurDeclenche = false;
-    }
-  }
+  
 }
 
 void sauvegarderDonnees(const char* key, const uint32_t value) {
