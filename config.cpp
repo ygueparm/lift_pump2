@@ -1,7 +1,7 @@
 #include "config.h"
 
 // Définition des variables
-const char* ssid = "Pompe_Relevage1";     // Définie une seule fois
+const char* ssid = "Pompe_Relevage6";     // Définie une seule fois
 const char* password = "123456789";      // Définie une seule fois
 const char* apHostname = "pompe1.com"; // Définie une seule fois
 

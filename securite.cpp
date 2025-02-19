@@ -9,7 +9,7 @@ unsigned long tempsNiveauHautActif = 0; // Temps cumulé où niveauHaut est acti
 bool verifierSecurite() {
     if (securiteDeclenche >= MAX_SECURITE) {
         continuerProgramme = false;
-        Serial.println("Arrêt en raison de déclenchements consécutifs de la sécurité.");
+        Serial.println("Arrêt total en raison de trop de déclenchements consécutifs de la sécurité.");
         return false;
     }
     return true;
