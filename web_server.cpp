@@ -11,7 +11,7 @@ AsyncWebServer server(80);
 
 void initWebServer() {
   server.on("/", [](AsyncWebServerRequest * request) {
-    char html[3000];  // Ajustez la taille selon vos besoins
+    char html[5000];  // Ajustez la taille selon vos besoins
     snprintf(html, sizeof(html),
              "<!DOCTYPE html><html><head>"
              "<meta charset='UTF-8'>"
@@ -26,6 +26,7 @@ void initWebServer() {
              ".btn-temps { background-color: #0070ff; }"
              ".btn-tableau { background-color: #006400; }"  // Vert foncé pour le nouveau bouton
              ".btn-fermer { background-color: #7a7a7a; }"     // Gris foncé pour le bouton "Fermer"
+             ".btn-reset { background-color: #FF8C00; }" //jaune foncé pour la remise a 0
              "#modalTableau { display: none; position: fixed; top: 50%%; left: 50%%; transform: translate(-50%%, -50%%); background: white; padding: 20px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); z-index: 1000; }"
              "</style>"
              "</head><body>"
@@ -38,6 +39,7 @@ void initWebServer() {
              "<button class='btn-modifier' onclick='modifierTemps()'>Modification du temps de fonctionnement</button>"
              "<p id='messageModifier'></p>"
              "<button class='btn-tableau' onclick='afficherTableauFonctionnement()'>Affichage tableau fonctionnement</button>"  // Nouveau bouton
+             "<button class='btn-reset' onclick='resetTableau()'>Mise à 0</button>"  // Bouton "Mise à 0" sur la page principale
              "<div id='modalTableau'>"  // Modal pour afficher le tableau
              "<h2>Tableau de fonctionnement</h2>"
              "<pre id='tableauData'></pre>"
@@ -76,6 +78,20 @@ void initWebServer() {
              "            document.getElementById('tableauData').innerText = data;"
              "            document.getElementById('modalTableau').style.display = 'block';"
              "        });"
+             "}"
+             "function resetTableau() {"
+             "    if (confirm('Êtes-vous sûr de vouloir réinitialiser le tableau ?')) {"
+             "        fetch('/reset-tableau')"
+             "            .then(response => response.text())"
+             "            .then(data => {"
+             "                alert(data);"
+             "                location.reload();"
+             "            })"
+             "            .catch(error => {"
+             "                console.error('Erreur lors de la réinitialisation du tableau :', error);"
+             "                alert('Une erreur est survenue lors de la réinitialisation du tableau.');"
+             "            });"
+             "    }"
              "}"
              "</script>"
              "</body></html>"
@@ -140,6 +156,17 @@ void initWebServer() {
       data += String(i) + " | " + tempsFormatte + "\n";
     }
     request->send(200, "text/plain", data);
+  });
+
+  //initaliser le tableau a 0
+  server.on("/reset-tableau", HTTP_GET, [](AsyncWebServerRequest * request) {
+    for (int i = 0; i < MAX_ENTRIES; i++) {
+      char key[15];
+      snprintf(key, sizeof(key), "temps_%d", i);
+      prefsPompe.remove(key);  // Supprime chaque entrée du tableau
+    }
+    prefsPompe.putInt("indice_tableau", 0);  // Réinitialise l'index circulaire
+    request->send(200, "text/plain", "Tableau réinitialisé avec succès !");
   });
   server.begin();
 }
