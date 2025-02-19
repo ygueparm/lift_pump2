@@ -35,6 +35,8 @@ void setup() {
   pinMode(CAPTEUR_NIVEAU_HAUT, INPUT_PULLDOWN);
   pinMode(RELAIS_SECURITE, INPUT_PULLDOWN);
   pinMode(CAPTEUR_CONTACTEUR, INPUT_PULLDOWN);
+  pinMode(MOTEUR_POMPE, OUTPUT);
+  digitalWrite(MOTEUR_POMPE, HIGH);
   // Configure le DNS local avec le serveur AP
   //**** affiche le tableau des dernier demarrages
   // Configure le DNS local avec le serveur AP
@@ -56,6 +58,7 @@ void setup() {
   // Initialisation des variables
   initialiserVariables();
   initialiserLed();
+
   // lancement du serveur web
   initWebServer();
   server.begin();
