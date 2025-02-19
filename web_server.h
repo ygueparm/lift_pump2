@@ -8,5 +8,8 @@ extern AsyncWebServer server;
 
 // Déclaration de la fonction initWebServer()
 void initWebServer();
+void initWebDefault();
+void initWebAlarm();
+
 
 #endif // WEB_SERVER_H

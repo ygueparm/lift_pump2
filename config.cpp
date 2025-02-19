@@ -34,7 +34,8 @@ unsigned long tempsReel = 0;
 bool miseAJourEffectuee = false;
 bool initialisationVoyant = false;
 bool continuerProgramme = true;  
-
+unsigned long debutNiveauHaut = 0;
+const unsigned long SEUIL_BLOCAGE = 5000;  // 10 secondes
 
 // Définition des variables
 const long intervalled = 1000;
@@ -42,6 +43,8 @@ unsigned long previousMillisled = 0;
 bool ledState = false;
 unsigned long previousMillis_print = 0; // Variable pour stocker le dernier temps
 const unsigned long interval_print = 4000;
+
+
 
 void initialiserVariables() {
     securiteDeclenche = 0;

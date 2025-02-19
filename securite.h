@@ -6,6 +6,9 @@
 extern bool continuerProgramme;
 extern int securiteDeclenche;
 
+// Variables supplémentaires
+extern unsigned long tempsNiveauHautActif; // Temps cumulé où niveauHaut est actif
+
 
 bool verifierSecurite();
 

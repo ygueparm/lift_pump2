@@ -2,6 +2,9 @@
 #include <Arduino.h>  // Nécessaire pour Serial
 #include "config.h"
 #include "capteurs.h"
+// Variables supplémentaires pour le capteur bloqué
+unsigned long tempsNiveauHautActif = 0; // Temps cumulé où niveauHaut est actif
+           // Indicateur si le capteur est bloqué
 
 bool verifierSecurite() {
     if (securiteDeclenche >= MAX_SECURITE) {

@@ -4,10 +4,11 @@
 // Broches
 #define MOTEUR_POMPE         22 
 #define CAPTEUR_NIVEAU_HAUT  23
-#define RELAIS_SECURITE      21
+#define RELAIS_SECURITE      21 
 #define CAPTEUR_CONTACTEUR   4
 // watchdog en seconde : 
 #define WDT_TIMEOUT 5
+#define DELAI_ATTENTE_REDEMARRAGE 240000
 extern int Led;  // Déclaration externe de la variable Led
 
 // Constantes de temps
@@ -25,7 +26,7 @@ extern bool ledState;
 // Configuration
 const unsigned long TEMP_FONCTIONNEMENT_MOTEUR_CONFIG = 2000;
 const unsigned long TEMP_ATTENTE_SECURITE = 10000UL;
-const int MAX_SECURITE = 3;
+const int MAX_SECURITE = 5;
 const int MAX_ENTRIES = 10;
 const int MAX_STRING_LENGTH = 100;
 
@@ -62,6 +63,9 @@ extern int indiceDerniereEntreeTempsDepuis;
 extern int indiceDerniereEntreeTempsReel;
 extern int nombreEntries;
 extern int indiceDerniereEntree;
+extern unsigned long debutNiveauHaut;
+extern const unsigned long SEUIL_BLOCAGE;  // 10 secondes
+
 
 // Calcul du temps réel de fonctionnement avec retour du contacteur
 extern volatile unsigned long tempsDebutReel;
