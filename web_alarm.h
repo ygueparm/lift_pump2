@@ -2,7 +2,7 @@
 #define WEB_ALARM_H
 
 #include <ESPAsyncWebServer.h>
-
-void initWebAlarm(AsyncWebServer& server);
+extern AsyncWebServer server;
+void initWebAlarm();
 
 #endif
