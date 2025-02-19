@@ -8,7 +8,7 @@
 #define CAPTEUR_CONTACTEUR   4
 // watchdog en seconde : 
 #define WDT_TIMEOUT 5
-#define DELAI_ATTENTE_REDEMARRAGE 240000
+#define DELAI_ATTENTE_REDEMARRAGE 10000
 extern int Led;  // Déclaration externe de la variable Led
 
 // Constantes de temps
