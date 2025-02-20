@@ -52,12 +52,12 @@ void setup() {
   esp_task_wdt_init(WDT_TIMEOUT, true);  //enable panic so ESP32 restarts
   esp_task_wdt_add(NULL);                //add current thread to WDT watch
 
-//initilaisation de LittleFS pour les log
- if (!LittleFS.begin(true)) {
-        Serial.println("Erreur lors de l'initialisation de LittleFS");
-        return;
-    }
-    Serial.println("LittleFS initialisé avec succès");
+  //initilaisation de LittleFS pour les log
+  if (!LittleFS.begin(true)) {
+    Serial.println("Erreur lors de l'initialisation de LittleFS");
+    return;
+  }
+  Serial.println("LittleFS initialisé avec succès");
 
 
   chargerTableau();  //charger les données sauvegardé au demarrage
@@ -71,7 +71,7 @@ void setup() {
   // lancement du serveur web
   initWebServer();
   server.begin();
-    // Vérifier si le fichier existe, sinon le créer
+  /* Vérifier si le fichier existe, sinon le créer
     if (!LittleFS.exists("/compteurs.txt")) {
         Serial.println("Fichier compteurs.txt absent, création en cours...");
         File file = LittleFS.open("/compteurs.txt", FILE_WRITE);
@@ -81,7 +81,7 @@ void setup() {
         } else {
             Serial.println("Erreur lors de la création du fichier compteurs.txt !");
         }
-    }
+    } */
 }
 void loop() {
   dnsServer.processNextRequest();  //pour permettre au serveur DNS de traiter les requêtes entrantes de manière continue.
@@ -203,26 +203,42 @@ void loop() {
   }
 
 
-    // Mettre à jour les compteurs uniquement si l'état change
-    compteurNiveauHaut += (capteurs.niveauHaut && !precedentNiveauHaut) ? 1 : 0;
-    compteurContacteur += (capteurs.etatContacteur && !precedentContacteur) ? 1 : 0;
-    compteurRelaisSecurite += (capteurs.etatRelaisSecurite && !precedentRelaisSecurite) ? 1 : 0;
-    compteurMoteurEnMarche += (moteurEnMarche && !precedentMoteurEnMarche) ? 1 : 0;
-    compteurCapteurBloque += (capteurBloque && !precedentCapteurBloque) ? 1 : 0;
-   // Mettre à jour les états précédents
-    precedentNiveauHaut = capteurs.niveauHaut;
-    precedentContacteur = capteurs.etatContacteur;
-    precedentRelaisSecurite = capteurs.etatRelaisSecurite;
-    precedentMoteurEnMarche = moteurEnMarche;
-    precedentCapteurBloque = capteurBloque;
-   // Enregistrer les compteurs dans LittleFS (optionnel, à faire moins fréquemment)
-    static unsigned long dernierEnregistrement = 0;
-    if (millis() - dernierEnregistrement > 60000) {  // Enregistrer toutes les 60 secondes
-        enregistrerCompteurs(compteurNiveauHaut, compteurContacteur, compteurRelaisSecurite, compteurMoteurEnMarche, compteurCapteurBloque);
-        dernierEnregistrement = millis();
-    }
-  
-  
+  // Mettre à jour les compteurs uniquement si l'état change
+  bool modification = false;
+
+  if (capteurs.niveauHaut && !precedentNiveauHaut) {
+    compteurNiveauHaut++;
+    modification = true;
+  }
+  if (capteurs.etatContacteur && !precedentContacteur) {
+    compteurContacteur++;
+    modification = true;
+  }
+  if (capteurs.etatRelaisSecurite && !precedentRelaisSecurite) {
+    compteurRelaisSecurite++;
+    modification = true;
+  }
+  if (moteurEnMarche && !precedentMoteurEnMarche) {
+    compteurMoteurEnMarche++;
+    modification = true;
+  }
+  if (capteurBloque && !precedentCapteurBloque) {
+    compteurCapteurBloque++;
+    modification = true;
+  }
+
+  precedentNiveauHaut = capteurs.niveauHaut;
+  precedentContacteur = capteurs.etatContacteur;
+  precedentRelaisSecurite = capteurs.etatRelaisSecurite;
+  precedentMoteurEnMarche = moteurEnMarche;
+  precedentCapteurBloque = capteurBloque;
+
+  // Sauvegarde si modification ou toutes les 60 sec
+  static unsigned long dernierEnregistrement = 0;
+  if (modification || millis() - dernierEnregistrement > 60000) {
+    enregistrerCompteurs(compteurNiveauHaut, compteurContacteur, compteurRelaisSecurite, compteurMoteurEnMarche, compteurCapteurBloque);
+    dernierEnregistrement = millis();
+  }
 }
 
 void sauvegarderDonnees(const char* key, const uint32_t value) {
@@ -252,39 +268,39 @@ void chargerTableau() {
   Serial.println("Données du tableau chargées avec succès.");
 }
 
-//ecrire l'ensemble du fonctionnement de l'esp32 
+//ecrire l'ensemble du fonctionnement de l'esp32
 void enregistrerCompteurs(int niveauHaut, int etatContacteur, int etatRelaisSecurite, int moteurEnMarche, int capteurBloque) {
-    // Ouvrir le fichier en mode écriture (écrase le fichier existant)
-    File file = LittleFS.open("/compteurs.txt", FILE_WRITE);
-    if (!file) {
-        Serial.println("Erreur lors de l'ouverture du fichier compteurs pour ecrire");
-        return;
-    }
+  // Ouvrir le fichier en mode écriture (écrase le fichier existant)
+  File file = LittleFS.open("/compteurs.txt", FILE_WRITE);
+  if (!file) {
+    Serial.println("Erreur lors de l'ouverture du fichier compteurs pour ecrire");
+    return;
+  }
 
-    // Écrire les compteurs dans le fichier
-    file.printf("Niveau haut: %d\nContacteur: %d\nRelais sécurité: %d\nMoteur en marche: %d\nCapteur bloqué: %d\n",
-                niveauHaut, etatContacteur, etatRelaisSecurite, moteurEnMarche, capteurBloque);
+  // Écrire les compteurs dans le fichier
+  file.printf("Niveau haut: %d\nContacteur: %d\nRelais sécurité: %d\nMoteur en marche: %d\nCapteur bloqué: %d\n",
+              niveauHaut, etatContacteur, etatRelaisSecurite, moteurEnMarche, capteurBloque);
 
-    // Fermer le fichier
-    file.close();
-    Serial.println("Compteurs enregistrés");
+  // Fermer le fichier
+  file.close();
+  Serial.println("Compteurs enregistrés");
 }
 
 //lire le fichier de log dans la console serie
 void lireCompteurs() {
-    // Ouvrir le fichier en mode lecture
-    File file = LittleFS.open("/compteurs.txt", FILE_READ);
-    if (!file) {
-        Serial.println("Erreur lors de l'ouverture du fichier compteurs pour lire");
-        return;
-    }
+  // Ouvrir le fichier en mode lecture
+  File file = LittleFS.open("/compteurs.txt", FILE_READ);
+  if (!file) {
+    Serial.println("Erreur lors de l'ouverture du fichier compteurs pour lire");
+    return;
+  }
 
-    // Lire et afficher le contenu du fichier
-    Serial.println("Compteurs :");
-    while (file.available()) {
-        Serial.write(file.read());
-    }
+  // Lire et afficher le contenu du fichier
+  Serial.println("Compteurs :");
+  while (file.available()) {
+    Serial.write(file.read());
+  }
 
-    // Fermer le fichier
-    file.close();
+  // Fermer le fichier
+  file.close();
 }
