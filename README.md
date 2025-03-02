@@ -1,6 +1,8 @@
 # Lift Pump - Summary of Operation
 en francais à la fin
 
+what news ? watchdog, write everything in preference or spi files, and some factorisation
+
 When I bought my house, there was an original pump, but after many breakdowns and having noticed the presence of mud and H2S in large quantities, I embarked on this project. The cable sheathing was being eaten away by the H2S and the pump body, which was not submerged, was very badly attacked by rust.
 
  I switched to this esp32 management system, as I wasn't satisfied with what was available. Too expensive, no configuration possible. It was useful once when hair started to surround the rotating joint of the stator, I was able to repair before it was too late, and it's never glamorous this kind of unexpected failure. and it's very instructive this kind of project. I have an arduino in production with an RPI for the wifi part, I'm going to switch everything over to an ESP32, here's my project. I'm not a programmer by trade, so forgive my mistakes and monstrosities.
@@ -9,8 +11,12 @@ This project consists of creating a control system for a lift pump. The aim is t
 - limit the presence of H2S gas and odours
 - make full use of tank capacity
 - protect the pump well in advance from existing problems, hair on the rotor, blocked rotor, blocked sensor and avoid burning out the motor.
+  
+<img src="https://github.com/ygueparm/lift_pump2/blob/main/img3.jpg" alt="screen shoot" width="300">
+<img src="https://github.com/ygueparm/lift_pump2/blob/main/img4.jpg" alt="screen shoot" width="300">
+<img src="https://github.com/ygueparm/lift_pump2/blob/main/img1.jpg" alt="screen shoot" width="300">
+<img src="https://github.com/ygueparm/lift_pump2/blob/main/img11.jpg" alt="screen shoot" width="300">
 
-<img src="https://github.com/ygueparm/lift_pump/blob/main/screenshot.jpg" alt="screen shoot" width="300">
 
 ## Features
 
@@ -61,6 +67,9 @@ This project is designed for educational and experimental purposes. Make sure yo
 
 # Pompe de Relevage - Résumé de Fonctionnement
 
+quoi de neuf ? mise en place d'un watchdog hard pour relancer l'esp32 en cas de plantage, refonte site de gestion avec message d'erreur dynamique et reinitialisation si necessaire
+factorisation, pas vraiment terminé mais arrive t'on a le faire pour toujours ? sauvegarde des temps de focntionnement en utilisant preference.h et ecriture de log avec spi dans la memoire flash. version 3 dans le futur, mesure vibration par un accelerometre et mesure vitesse de l'axe du moteur par un module IR, il y a pas mla de place dans une amaporter on devrait pouvoir tous caser
+
 lorsque j'ai acheté ma maison, il y avait une pompe de relevage, à force de panne et après avoir constaté la présence de boue et de H2S en forte quantité, je me suis lancé dans ce projet. La gaine des cables etait rongé par l'H2S et le corps de pompe qui n'était pas submergé très attaqué par de la rouille.
 
  je suis passé à cette gestion par esp32, je n'etais pas satisfait de ce qui existait. trop chère , pas de configuration possible. Cela a servi une fois lorsque des cheveux ont commencé a entourer le joint tournant du stator, j'ai pu depanner avant que cela soit trop tard, et ce n'est jamais glamour ce genre de panne non prévu. et c'est très instructif ce genre de projet. J'ai un arduino en production avec un RPI pour la partie wifi, je vais basculé tout cela sur un ESP32, voici mon projet. je ne suis pas programmeur de metier, pardonné mes erreur et monstruosité. j'ai fait le choix de n'avoir qu'un seul fichier pour qu'un debutant puisse le compiler sans peine
@@ -69,7 +78,10 @@ Ce projet consiste en la création d'un système de contrôle pour une pompe de 
 - de limité la presence de gaz H2S et d'odeur
 - d'utiliser pleinement la capacité du reservoir
 - de proteger la pompe très en amont des problemes existant, cheveux sur le rotor, rotor bloqué, capteur bloqué et de ne pas griller son moteur
-<img src="https://github.com/ygueparm/lift_pump/blob/main/screenshot.jpg" alt="screen shoot" width="300">
+<img src="https://github.com/ygueparm/lift_pump2/blob/main/img3.jpg" alt="screen shoot" width="300">
+<img src="https://github.com/ygueparm/lift_pump2/blob/main/img4.jpg" alt="screen shoot" width="300">
+<img src="https://github.com/ygueparm/lift_pump2/blob/main/img1.jpg" alt="screen shoot" width="300">
+<img src="https://github.com/ygueparm/lift_pump2/blob/main/img11.jpg" alt="screen shoot" width="300">
 
 ## Fonctionnalités
 
