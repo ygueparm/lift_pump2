@@ -1,7 +1,7 @@
 # Lift Pump - Summary of Operation
 en francais à la fin
 
-what news ? watchdog, write everything in preference or spi files, and some factorisation
+what news ? watchdog, write everything in preference or spi files, and some factorisation and rebuild the ihm
 
 When I bought my house, there was an original pump, but after many breakdowns and having noticed the presence of mud and H2S in large quantities, I embarked on this project. The cable sheathing was being eaten away by the H2S and the pump body, which was not submerged, was very badly attacked by rust.
 
